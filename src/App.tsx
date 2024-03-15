@@ -1,5 +1,6 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber'
+import { OrbitControls } from '@react-three/drei'
 
 const sizes = {
   width: '100vw',
@@ -25,6 +26,7 @@ function App() {
         fov: 75,
       }}
     >
+      <OrbitControls />
       <Box />
     </Canvas>
   );
