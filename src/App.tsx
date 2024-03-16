@@ -2,6 +2,7 @@ import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
+import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 const sizes = {
   width: '100vw',
@@ -38,6 +39,15 @@ const Box: React.FC<BoxProps> = ({ position, colors, size }) => {
 
 
 function App() {
+  const settings = {
+    'Shuffle': function () {
+      console.log("Shuffle")
+    },
+  }
+  const gui = new GUI();
+  gui.add(settings, 'Shuffle');
+  console.log(gui)
+  
   const rubiksColors: number[][][] = [
     [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]],
     [[1, 1, 0], [1, 1, 0], [1, 1, 0], [1, 1, 0], [1, 1, 0], [1, 1, 0]],
