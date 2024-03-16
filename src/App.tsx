@@ -10,25 +10,43 @@ const sizes = {
 interface BoxProps {
   position: [number, number, number];
   color: string;
+  size: number;
 }
 
-const Box: React.FC<BoxProps> = ({ position, color }) => {
+const Box: React.FC<BoxProps> = ({ position, color, size }) => {
   return (
-    <mesh position={position}>
+    <mesh position={position} scale={size}>
       <boxGeometry args={[1, 1, 1]} />
-      <meshBasicMaterial color={color} />
+      <meshStandardMaterial color={color}/>
     </mesh>
   );
 };
 
 function App() {
-  const boxes: { position: [number, number, number]; color: string }[] = [];
+  const rubiksColors: string[] = [
+    '#FF0000',
+    '#00FF00',
+    '#0000FF',
+  ];
 
-  for (let x = -1; x <= 1; x++) {
-    for (let y = -1; y <= 1; y++) {
-      for (let z = -1; z <= 1; z++) {
-        const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
-        boxes.push({ position: [x, y, z], color: randomColor });
+  const rubiksSize = 3;
+  const cubeSize = 1;
+
+  const rubiksCubes: { position: [number, number, number]; color: string; size: number }[] = [];
+
+  for (let x = 0; x < rubiksSize; x++) {
+    for (let y = 0; y < rubiksSize; y++) {
+      for (let z = 0; z < rubiksSize; z++) {
+        const color = rubiksColors[y];
+        rubiksCubes.push({
+          position: [
+            x * cubeSize,
+            y * cubeSize,
+            z * cubeSize,
+          ],
+          color: color,
+          size: cubeSize
+        });
       }
     }
   }
@@ -43,8 +61,10 @@ function App() {
       }}
     >
       <OrbitControls />
-      {boxes.map((box, index) => (
-        <Box key={index} position={box.position} color={box.color} />
+      <ambientLight />
+      <directionalLight position={[3, 5, 3]} />
+      {rubiksCubes.map((box, index) => (
+        <Box key={index} position={box.position} color={box.color} size={box.size} />
       ))}
     </Canvas>
   );
