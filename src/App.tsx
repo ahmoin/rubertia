@@ -46,7 +46,6 @@ function App() {
   }
   const gui = new GUI();
   gui.add(settings, 'Shuffle');
-  console.log(gui)
   
   const rubiksColors: number[][][] = [
     [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]],
@@ -72,15 +71,9 @@ function App() {
     for (let y = 0; y < rubiksSize; y++) {
       for (let z = 0; z < rubiksSize; z++) {
         const colors = rubiksColors;
-        rubiksCubes.push({
-          position: new THREE.Vector3(
-            x * cubeSize,
-            y * cubeSize,
-            z * cubeSize,
-            ),
-          colors: colors,
-          size: cubeSize
-        });
+        let position = new THREE.Vector3(x * cubeSize, y * cubeSize, z * cubeSize);
+
+        rubiksCubes.push({ position, colors, size: cubeSize });
       }
     }
   }
