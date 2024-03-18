@@ -70,15 +70,11 @@ const Square: React.FC<SquareProps> = ({ position, color, rotation }) => {
     <group position={position} rotation={rotation}>
       <mesh scale={new THREE.Vector3(0.9, 0.9, 0.9)}>
         <shapeGeometry args={[squareShape]} />
-        <meshStandardMaterial attach="material" color={color} />
+        <meshPhongMaterial shininess={100} color={color} />
       </mesh>
       <mesh position={new THREE.Vector3(0, 0, -0.01)}>
         <shapeGeometry args={[squareShape]} />
-        <meshBasicMaterial
-          attach="material"
-          color="black"
-          side={THREE.DoubleSide}
-        />
+        <meshBasicMaterial color="black" side={THREE.DoubleSide} />
       </mesh>
     </group>
   );
@@ -133,80 +129,80 @@ function App() {
   const rubiksColors: THREE.Color[][][] = [
     [
       [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("black"),
-        new THREE.Color("yellow"),
-        new THREE.Color("black"),
-        new THREE.Color("orange"),
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0x000000),
+        new THREE.Color(0xffd500),
+        new THREE.Color(0x000000),
+        new THREE.Color(0xff5800),
       ],
       [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-        new THREE.Color("orange"),
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
+        new THREE.Color(0xff5800),
       ],
       [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("white"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-        new THREE.Color("orange"),
-      ],
-    ],
-    [
-      [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("black"),
-        new THREE.Color("yellow"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-      ],
-      [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-      ],
-      [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("white"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0xffffff),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
+        new THREE.Color(0xff5800),
       ],
     ],
     [
       [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("black"),
-        new THREE.Color("yellow"),
-        new THREE.Color("red"),
-        new THREE.Color("black"),
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0x000000),
+        new THREE.Color(0xffd500),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
       ],
       [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("black"),
-        new THREE.Color("black"),
-        new THREE.Color("red"),
-        new THREE.Color("black"),
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
       ],
       [
-        new THREE.Color("green"),
-        new THREE.Color("blue"),
-        new THREE.Color("white"),
-        new THREE.Color("black"),
-        new THREE.Color("red"),
-        new THREE.Color("black"),
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0xffffff),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
+      ],
+    ],
+    [
+      [
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0x000000),
+        new THREE.Color(0xffd500),
+        new THREE.Color(0xc41e3a),
+        new THREE.Color(0x000000),
+      ],
+      [
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0x000000),
+        new THREE.Color(0x000000),
+        new THREE.Color(0xc41e3a),
+        new THREE.Color(0x000000),
+      ],
+      [
+        new THREE.Color(0x009e60),
+        new THREE.Color(0x0051ba),
+        new THREE.Color(0xffffff),
+        new THREE.Color(0x000000),
+        new THREE.Color(0xc41e3a),
+        new THREE.Color(0x000000),
       ],
     ],
   ];
@@ -230,20 +226,42 @@ function App() {
   }
 
   return (
-    <Canvas
-      style={{ width: sizes.width, height: sizes.height }}
-      gl={{ alpha: false }}
-      camera={{
-        position: [0, 3, 4],
-        fov: 75,
+    <div
+      style={{
+        width: sizes.width,
+        height: sizes.height,
+        backgroundColor: "#444444",
       }}
     >
-      <OrbitControls />
-      <ambientLight />
-      {rubiksCubes.map((cube, index) => (
-        <Cube key={index} colors={cube.colors} position={cube.position} />
-      ))}
-    </Canvas>
+      <Canvas
+        style={{ width: sizes.width, height: sizes.height }}
+        camera={{
+          position: [0, 3, 4],
+          fov: 70,
+        }}
+      >
+        <OrbitControls />
+
+        <directionalLight
+          color={0xffffff}
+          intensity={3}
+          position={new THREE.Vector3(0, 2, 0)}
+        />
+        <directionalLight
+          color={0xffffff}
+          intensity={3}
+          position={new THREE.Vector3(1, 2, 1)}
+        />
+        <directionalLight
+          color={0xffffff}
+          intensity={3}
+          position={new THREE.Vector3(-1, -2, -1)}
+        />
+        {rubiksCubes.map((cube, index) => (
+          <Cube key={index} colors={cube.colors} position={cube.position} />
+        ))}
+      </Canvas>
+    </div>
   );
 }
 
