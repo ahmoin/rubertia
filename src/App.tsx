@@ -10,7 +10,7 @@ const sizes = {
 };
 
 interface BoxProps {
-  position: [number, number, number];
+  position: THREE.Vector3;
   colors: number[][][];
   size: number;
 }
@@ -66,18 +66,18 @@ function App() {
   const rubiksSize = 3;
   const cubeSize = 1;
 
-  const rubiksCubes: { position: [number, number, number]; colors: number[][][]; size: number }[] = [];
+  const rubiksCubes: { position: THREE.Vector3; colors: number[][][]; size: number }[] = [];
 
   for (let x = 0; x < rubiksSize; x++) {
     for (let y = 0; y < rubiksSize; y++) {
       for (let z = 0; z < rubiksSize; z++) {
         const colors = rubiksColors;
         rubiksCubes.push({
-          position: [
+          position: new THREE.Vector3(
             x * cubeSize,
             y * cubeSize,
             z * cubeSize,
-          ],
+            ),
           colors: colors,
           size: cubeSize
         });
