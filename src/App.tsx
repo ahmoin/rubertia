@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, TrackballControls } from "@react-three/drei";
+import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
+import * as TWEEN from "@tweenjs/tween.js";
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 
 const sizes = {
@@ -11,8 +12,8 @@ const sizes = {
 
 interface SquareProps {
   position: THREE.Vector3;
-  color: THREE.Color;
   rotation: THREE.Euler;
+  color: THREE.Color;
 }
 
 interface CubeProps {
@@ -20,7 +21,7 @@ interface CubeProps {
   colors: THREE.Color[];
 }
 
-const Square: React.FC<SquareProps> = ({ position, color, rotation }) => {
+const Square: React.FC<SquareProps> = ({ position, rotation, color }) => {
   const squareShape = new THREE.Shape();
   const x = 0,
     y = 0;
@@ -87,49 +88,77 @@ const Square: React.FC<SquareProps> = ({ position, color, rotation }) => {
 
 const Cube: React.FC<CubeProps> = ({ position, colors }) => {
   return (
-    <group position={position} >
+    <group position={position}>
       <Square
         position={new THREE.Vector3(0, 0, 0.5)}
-        color={colors[0]}
         rotation={new THREE.Euler()}
+        color={colors[0]}
       />
       <Square
         position={new THREE.Vector3(0, 0, -0.5)}
-        color={colors[1]}
         rotation={new THREE.Euler(0, Math.PI, 0)}
+        color={colors[1]}
       />
       <Square
         position={new THREE.Vector3(0, 0.5, 0)}
-        color={colors[2]}
         rotation={new THREE.Euler(-Math.PI / 2, 0, 0)}
+        color={colors[2]}
       />
       <Square
         position={new THREE.Vector3(0, -0.5, 0)}
-        color={colors[3]}
         rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
+        color={colors[3]}
       />
       <Square
         position={new THREE.Vector3(0.5, 0, 0)}
-        color={colors[4]}
         rotation={new THREE.Euler(0, Math.PI / 2, 0)}
+        color={colors[4]}
       />
       <Square
         position={new THREE.Vector3(-0.5, 0, 0)}
-        color={colors[5]}
         rotation={new THREE.Euler(0, -Math.PI / 2, 0)}
+        color={colors[5]}
       />
     </group>
   );
 };
 
 function App() {
+  const rubiksRef = useRef<THREE.Group>(null);
+
+  const tweenTopLayerRotation = () => {
+    if (rubiksRef.current && rubiksRef.current.children) {
+      rubiksRef.current.children.forEach((cube) => {
+        if (cube && cube.position.y === 1) {
+          const axis = new THREE.Vector3(0, 1, 0);
+
+          const start = { rotation: 0 };
+          const prev = { rotation: 0 };
+          const end = { rotation: Math.PI / 2 };
+
+          const tween = new TWEEN.Tween(start)
+            .to(end, 500)
+            .easing(TWEEN.Easing.Quadratic.InOut)
+            .onUpdate(({ rotation }) => {
+              cube.position.applyAxisAngle(axis, rotation - prev.rotation);
+              cube.rotateOnAxis(axis, rotation - prev.rotation);
+
+              prev.rotation = rotation;
+            });
+
+          tween.start();
+        }
+      });
+    }
+  };
+
   const settings = {
-    Shuffle: function () {
-      console.log("Shuffle");
+    "Turn Top Layer": function () {
+      tweenTopLayerRotation();
     },
   };
   const gui = new GUI();
-  gui.add(settings, "Shuffle");
+  gui.add(settings, "Turn Top Layer");
 
   const rubiksColors: THREE.Color[][][][] = [
     [
@@ -387,10 +416,17 @@ function App() {
           y - Math.floor(rubiksSize / 2),
           z - Math.floor(rubiksSize / 2)
         );
+
         rubiksCubes.push({ colors, position });
       }
     }
   }
+
+  const anim = (t?: number) => {
+    TWEEN.update(t);
+    requestAnimationFrame(anim);
+  };
+  anim();
 
   return (
     <div
@@ -424,9 +460,11 @@ function App() {
           intensity={3}
           position={new THREE.Vector3(-1, -2, -1)}
         />
-        {rubiksCubes.map((cube, index) => (
-          <Cube key={index} colors={cube.colors} position={cube.position} />
-        ))}
+        <group ref={rubiksRef}>
+          {rubiksCubes.map((cube, index) => (
+            <Cube key={index} colors={cube.colors} position={cube.position} />
+          ))}
+        </group>
       </Canvas>
     </div>
   );
