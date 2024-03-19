@@ -1,6 +1,6 @@
 import React from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { OrbitControls, TrackballControls } from "@react-three/drei";
 import * as THREE from "three";
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 
@@ -70,11 +70,16 @@ const Square: React.FC<SquareProps> = ({ position, color, rotation }) => {
     <group position={position} rotation={rotation}>
       <mesh scale={new THREE.Vector3(0.9, 0.9, 0.9)}>
         <shapeGeometry args={[squareShape]} />
-        <meshPhongMaterial shininess={100} color={color} />
+        <meshStandardMaterial metalness={0} roughness={0} color={color} />
       </mesh>
       <mesh position={new THREE.Vector3(0, 0, -0.01)}>
         <shapeGeometry args={[squareShape]} />
-        <meshBasicMaterial color="black" side={THREE.DoubleSide} />
+        <meshStandardMaterial
+          metalness={0}
+          roughness={0}
+          color="black"
+          side={THREE.DoubleSide}
+        />
       </mesh>
     </group>
   );
@@ -126,83 +131,245 @@ function App() {
   const gui = new GUI();
   gui.add(settings, "Shuffle");
 
-  const rubiksColors: THREE.Color[][][] = [
+  const rubiksColors: THREE.Color[][][][] = [
     [
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0x000000),
-        new THREE.Color(0xffd500),
-        new THREE.Color(0x000000),
-        new THREE.Color(0xff5800),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
       ],
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
-        new THREE.Color(0xff5800),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
       ],
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0xffffff),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
-        new THREE.Color(0xff5800),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xff5800),
+        ],
       ],
     ],
     [
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0x000000),
-        new THREE.Color(0xffd500),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
       ],
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
       ],
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0xffffff),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0x000000),
+          new THREE.Color(0x000000),
+        ],
       ],
     ],
     [
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0x000000),
-        new THREE.Color(0xffd500),
-        new THREE.Color(0xc41e3a),
-        new THREE.Color(0x000000),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
       ],
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0x000000),
-        new THREE.Color(0x000000),
-        new THREE.Color(0xc41e3a),
-        new THREE.Color(0x000000),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0x000000),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
       ],
       [
-        new THREE.Color(0x009e60),
-        new THREE.Color(0x0051ba),
-        new THREE.Color(0xffffff),
-        new THREE.Color(0x000000),
-        new THREE.Color(0xc41e3a),
-        new THREE.Color(0x000000),
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
+        [
+          new THREE.Color(0x009e60),
+          new THREE.Color(0x0051ba),
+          new THREE.Color(0xffffff),
+          new THREE.Color(0xffd500),
+          new THREE.Color(0xc41e3a),
+          new THREE.Color(0x000000),
+        ],
       ],
     ],
   ];
@@ -214,7 +381,7 @@ function App() {
   for (let x = 0; x < rubiksSize; x++) {
     for (let y = 0; y < rubiksSize; y++) {
       for (let z = 0; z < rubiksSize; z++) {
-        const colors = rubiksColors[x][y];
+        const colors = rubiksColors[x][y][z];
         let position = new THREE.Vector3(
           x - Math.floor(rubiksSize / 2),
           y - Math.floor(rubiksSize / 2),
