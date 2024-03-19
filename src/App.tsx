@@ -445,6 +445,7 @@ function App() {
       >
         <OrbitControls />
 
+        <ambientLight />
         <directionalLight
           color={0xffffff}
           intensity={3}
