@@ -78,7 +78,7 @@ const Square: React.FC<SquareProps> = ({ position, color, rotation }) => {
           metalness={0}
           roughness={0}
           color="black"
-          side={THREE.DoubleSide}
+          side={THREE.FrontSide}
         />
       </mesh>
     </group>
@@ -87,7 +87,7 @@ const Square: React.FC<SquareProps> = ({ position, color, rotation }) => {
 
 const Cube: React.FC<CubeProps> = ({ position, colors }) => {
   return (
-    <group position={position}>
+    <group position={position} >
       <Square
         position={new THREE.Vector3(0, 0, 0.5)}
         color={colors[0]}
