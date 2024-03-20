@@ -125,40 +125,91 @@ const Cube: React.FC<CubeProps> = ({ position, colors }) => {
 
 function App() {
   const rubiksRef = useRef<THREE.Group>(null);
+  interface Tween {
+    end(): void;
+    // Add other common tween methods here (e.g., play(), pause(), etc.)
+  }
+  const tweensPlaying: Tween[] = [];
 
-  const tweenTopLayerRotation = () => {
+  const tweenTopLayerRotation = (axis: THREE.Vector3, layer: number) => {
+    for (let tweenPlaying of tweensPlaying) {
+      tweenPlaying.end();
+    }
     if (rubiksRef.current && rubiksRef.current.children) {
       rubiksRef.current.children.forEach((cube) => {
-        if (cube && cube.position.y === 1) {
-          const axis = new THREE.Vector3(0, 1, 0);
+        let shouldRotate = false;
+        const { x, y, z } = axis;
 
+        // TODO: fix imprecise Vector3 values
+        console.log(cube.position.x);
+        switch (true) {
+          case x !== 0 && parseFloat(cube.position.x.toFixed()) === layer:
+            shouldRotate = true;
+            break;
+          case y !== 0 && parseFloat(cube.position.y.toFixed()) === layer:
+            shouldRotate = true;
+            break;
+          case z !== 0 && parseFloat(cube.position.z.toFixed()) === layer:
+            shouldRotate = true;
+            break;
+          default:
+            break;
+        }
+        if (cube && shouldRotate) {
           const start = { rotation: 0 };
           const prev = { rotation: 0 };
           const end = { rotation: Math.PI / 2 };
 
-          const tween = new TWEEN.Tween(start)
+          let currentTween = new TWEEN.Tween(start)
             .to(end, 500)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(({ rotation }) => {
               cube.position.applyAxisAngle(axis, rotation - prev.rotation);
-              cube.rotateOnAxis(axis, rotation - prev.rotation);
+              cube.rotateOnWorldAxis(axis, rotation - prev.rotation);
 
               prev.rotation = rotation;
             });
 
-          tween.start();
+          currentTween.start();
+          tweensPlaying.push(currentTween);
         }
       });
     }
   };
 
+  const axes = [
+    new THREE.Vector3(1, 0, 0),
+    new THREE.Vector3(0, 1, 0),
+    new THREE.Vector3(0, 0, 1),
+  ];
+
   const settings = {
-    "Turn Top Layer": function () {
-      tweenTopLayerRotation();
+    "Turn Random X Axis Layer": function () {
+      const randomLayer = 1;
+      const randomAxis = axes[0];
+      tweenTopLayerRotation(randomAxis, randomLayer);
+    },
+    "Turn Random Y Axis Layer": function () {
+      const randomLayer = 1;
+      const randomAxis = axes[1];
+      tweenTopLayerRotation(randomAxis, randomLayer);
+    },
+    "Turn Random Z Axis Layer": function () {
+      const randomLayer = 1;
+      const randomAxis = axes[2];
+      tweenTopLayerRotation(randomAxis, randomLayer);
+    },
+    "Turn Random Layer": function () {
+      const randomLayer = Math.random() < 0.5 ? -1 : 1;
+      const randomAxis = axes[Math.floor(Math.random() * 3)];
+      tweenTopLayerRotation(randomAxis, randomLayer);
     },
   };
   const gui = new GUI();
-  gui.add(settings, "Turn Top Layer");
+  gui.add(settings, "Turn Random Layer");
+  gui.add(settings, "Turn Random X Axis Layer");
+  gui.add(settings, "Turn Random Y Axis Layer");
+  gui.add(settings, "Turn Random Z Axis Layer");
 
   const rubiksColors: THREE.Color[][][][] = [
     [
