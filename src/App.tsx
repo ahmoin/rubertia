@@ -125,14 +125,9 @@ const Cube: React.FC<CubeProps> = ({ position, colors }) => {
 
 function App() {
   const rubiksRef = useRef<THREE.Group>(null);
-  interface Tween {
-    end(): void;
-    // Add other common tween methods here (e.g., play(), pause(), etc.)
-  }
-  const tweensPlaying: Tween[] = [];
 
   const tweenTopLayerRotation = (axis: THREE.Vector3, layer: number) => {
-    for (let tweenPlaying of tweensPlaying) {
+    for (const tweenPlaying of TWEEN.getAll()) {
       tweenPlaying.end();
     }
     if (rubiksRef.current && rubiksRef.current.children) {
@@ -140,16 +135,15 @@ function App() {
         let shouldRotate = false;
         const { x, y, z } = axis;
 
-        // TODO: fix imprecise Vector3 values
-        console.log(cube.position.x);
+        cube.position.round();
         switch (true) {
-          case x !== 0 && parseFloat(cube.position.x.toFixed()) === layer:
+          case x !== 0 && cube.position.x === layer:
             shouldRotate = true;
             break;
-          case y !== 0 && parseFloat(cube.position.y.toFixed()) === layer:
+          case y !== 0 && cube.position.y === layer:
             shouldRotate = true;
             break;
-          case z !== 0 && parseFloat(cube.position.z.toFixed()) === layer:
+          case z !== 0 && cube.position.z === layer:
             shouldRotate = true;
             break;
           default:
@@ -160,7 +154,7 @@ function App() {
           const prev = { rotation: 0 };
           const end = { rotation: Math.PI / 2 };
 
-          let currentTween = new TWEEN.Tween(start)
+          const rotationTween = new TWEEN.Tween(start)
             .to(end, 500)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(({ rotation }) => {
@@ -170,8 +164,7 @@ function App() {
               prev.rotation = rotation;
             });
 
-          currentTween.start();
-          tweensPlaying.push(currentTween);
+          rotationTween.start();
         }
       });
     }
@@ -185,19 +178,19 @@ function App() {
 
   const settings = {
     "Turn Random X Axis Layer": function () {
-      const randomLayer = 1;
-      const randomAxis = axes[0];
-      tweenTopLayerRotation(randomAxis, randomLayer);
+      const randomLayer = Math.random() < 0.5 ? -1 : 1;
+      const selectedAxis = axes[0];
+      tweenTopLayerRotation(selectedAxis, randomLayer);
     },
     "Turn Random Y Axis Layer": function () {
-      const randomLayer = 1;
-      const randomAxis = axes[1];
-      tweenTopLayerRotation(randomAxis, randomLayer);
+      const randomLayer = Math.random() < 0.5 ? -1 : 1;
+      const selectedAxis = axes[1];
+      tweenTopLayerRotation(selectedAxis, randomLayer);
     },
     "Turn Random Z Axis Layer": function () {
-      const randomLayer = 1;
-      const randomAxis = axes[2];
-      tweenTopLayerRotation(randomAxis, randomLayer);
+      const randomLayer = Math.random() < 0.5 ? -1 : 1;
+      const selectedAxis = axes[2];
+      tweenTopLayerRotation(selectedAxis, randomLayer);
     },
     "Turn Random Layer": function () {
       const randomLayer = Math.random() < 0.5 ? -1 : 1;
