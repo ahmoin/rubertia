@@ -125,11 +125,14 @@ const Cube: React.FC<CubeProps> = ({ position, colors }) => {
 
 function App() {
   const rubiksRef = useRef<THREE.Group>(null);
+  let spinDuration = 500;
 
   const tweenTopLayerRotation = (axis: THREE.Vector3, layer: number) => {
+    console.log(TWEEN.getAll());
     for (const tweenPlaying of TWEEN.getAll()) {
       tweenPlaying.end();
     }
+    const rotationDirection = Math.random() < 0.5 ? -2 : 2;
     if (rubiksRef.current && rubiksRef.current.children) {
       rubiksRef.current.children.forEach((cube) => {
         let shouldRotate = false;
@@ -152,10 +155,10 @@ function App() {
         if (cube && shouldRotate) {
           const start = { rotation: 0 };
           const prev = { rotation: 0 };
-          const end = { rotation: Math.PI / 2 };
+          const end = { rotation: Math.PI / rotationDirection };
 
           const rotationTween = new TWEEN.Tween(start)
-            .to(end, 500)
+            .to(end, spinDuration)
             .easing(TWEEN.Easing.Quadratic.InOut)
             .onUpdate(({ rotation }) => {
               cube.position.applyAxisAngle(axis, rotation - prev.rotation);
@@ -197,12 +200,16 @@ function App() {
       const randomAxis = axes[Math.floor(Math.random() * 3)];
       tweenTopLayerRotation(randomAxis, randomLayer);
     },
+    "Spin Duration": spinDuration
   };
   const gui = new GUI();
   gui.add(settings, "Turn Random Layer");
   gui.add(settings, "Turn Random X Axis Layer");
   gui.add(settings, "Turn Random Y Axis Layer");
   gui.add(settings, "Turn Random Z Axis Layer");
+  gui.add(settings, "Spin Duration", 0, 1000).onChange(value => {
+    spinDuration = value
+  })
 
   const rubiksColors: THREE.Color[][][][] = [
     [
