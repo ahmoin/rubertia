@@ -129,81 +129,83 @@ function App() {
   let isSkippingTween = false;
   let shuffleIterations = 50;
 
-  const turnLayer = async (axis: THREE.Vector3, layer: number) => {
-    if (isSkippingTween) {
-      for (const tweenPlaying of TWEEN.getAll()) {
-        tweenPlaying.end();
-      }
-    } else {
-      if (TWEEN.getAll().length > 0) {
-        return;
-      }
-    }
-
-    const rotationDirection = Math.random() < 0.5 ? -2 : 2;
-
-    const cubePromises: Promise<void>[] = [];
-
-    if (rubiksRef.current && rubiksRef.current.children) {
-      rubiksRef.current.children.forEach((cube) => {
-        let shouldRotate = false;
-        const { x, y, z } = axis;
-
-        cube.position.round();
-        switch (true) {
-          case x !== 0 && cube.position.x === layer:
-            shouldRotate = true;
-            break;
-          case y !== 0 && cube.position.y === layer:
-            shouldRotate = true;
-            break;
-          case z !== 0 && cube.position.z === layer:
-            shouldRotate = true;
-            break;
-          default:
-            break;
+  function turnLayer(axis: THREE.Vector3, layer: number): Promise<void> {
+    return new Promise<void>((resolve) => {
+      if (isSkippingTween) {
+        for (const tweenPlaying of TWEEN.getAll()) {
+          tweenPlaying.end();
         }
-        if (cube && shouldRotate) {
-          const start = { rotation: 0 };
-          const prev = { rotation: 0 };
-          const end = { rotation: Math.PI / rotationDirection };
+        resolve();
+      } else {
+        if (TWEEN.getAll().length > 0) {
+          resolve();
+          return;
+        }
+      }
 
-          const rotationTween = new TWEEN.Tween(start)
-            .to(end, spinDuration)
-            .easing(TWEEN.Easing.Quadratic.InOut)
-            .onUpdate(({ rotation }) => {
-              cube.position.applyAxisAngle(axis, rotation - prev.rotation);
-              cube.rotateOnWorldAxis(axis, rotation - prev.rotation);
+      const rotationDirection = Math.random() < 0.5 ? -2 : 2;
 
-              prev.rotation = rotation;
-            });
+      const cubePromises: Promise<void>[] = [];
 
-          cubePromises.push(
-            new Promise<void>((resolve) => {
-              rotationTween.onComplete(() => {
-                resolve();
+      if (rubiksRef.current && rubiksRef.current.children) {
+        rubiksRef.current.children.forEach((cube) => {
+          let shouldRotate = false;
+          const { x, y, z } = axis;
+
+          cube.position.round();
+          switch (true) {
+            case x !== 0 && cube.position.x === layer:
+              shouldRotate = true;
+              break;
+            case y !== 0 && cube.position.y === layer:
+              shouldRotate = true;
+              break;
+            case z !== 0 && cube.position.z === layer:
+              shouldRotate = true;
+              break;
+            default:
+              break;
+          }
+          if (cube && shouldRotate) {
+            const start = { rotation: 0 };
+            const prev = { rotation: 0 };
+            const end = { rotation: Math.PI / rotationDirection };
+
+            const rotationTween = new TWEEN.Tween(start)
+              .to(end, spinDuration)
+              .easing(TWEEN.Easing.Quadratic.InOut)
+              .onUpdate(({ rotation }) => {
+                cube.position.applyAxisAngle(axis, rotation - prev.rotation);
+                cube.rotateOnWorldAxis(axis, rotation - prev.rotation);
+
+                prev.rotation = rotation;
               });
-              rotationTween.start();
-            })
-          );
-        }
+
+            cubePromises.push(
+              new Promise<void>((resolve) => {
+                rotationTween.onComplete(() => {
+                  resolve();
+                });
+                rotationTween.start();
+              })
+            );
+          }
+        });
+      }
+
+      Promise.all(cubePromises).then(() => {
+        resolve();
       });
-    }
+    });
+  }
 
-    await Promise.all(cubePromises);
-  };
-
-  const shuffleCube = async (iterations: number) => {
+  async function shuffleCube(iterations: number): Promise<void> {
     for (let i = 0; i < iterations; i++) {
       const randomLayer = Math.random() < 0.5 ? -1 : 1;
       const randomAxis = axes[Math.floor(Math.random() * 3)];
-      if (isSkippingTween) {
-        turnLayer(randomAxis, randomLayer);
-      } else {
-        await turnLayer(randomAxis, randomLayer);
-      }
+      await turnLayer(randomAxis, randomLayer);
     }
-  };
+  }
 
   const axes = [
     new THREE.Vector3(1, 0, 0),
