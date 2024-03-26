@@ -126,11 +126,18 @@ const Cube: React.FC<CubeProps> = ({ position, colors }) => {
 function App() {
   const rubiksRef = useRef<THREE.Group>(null);
   let spinDuration = 500;
+  let isSkippingTween = false;
+  let shuffleIterations = 50;
 
   const tweenTopLayerRotation = (axis: THREE.Vector3, layer: number) => {
-    console.log(TWEEN.getAll());
-    for (const tweenPlaying of TWEEN.getAll()) {
-      tweenPlaying.end();
+    if (isSkippingTween) {
+      for (const tweenPlaying of TWEEN.getAll()) {
+        tweenPlaying.end();
+      }
+    } else {
+      if (TWEEN.getAll().length > 0) {
+        return;
+      }
     }
     const rotationDirection = Math.random() < 0.5 ? -2 : 2;
     if (rubiksRef.current && rubiksRef.current.children) {
@@ -173,6 +180,14 @@ function App() {
     }
   };
 
+  const shuffleCube = (iterations: number) => {
+    for (let i = 0; i < iterations; i++) {
+      const randomLayer = Math.random() < 0.5 ? -1 : 1;
+      const randomAxis = axes[Math.floor(Math.random() * 3)];
+      tweenTopLayerRotation(randomAxis, randomLayer);
+    }
+  };
+
   const axes = [
     new THREE.Vector3(1, 0, 0),
     new THREE.Vector3(0, 1, 0),
@@ -180,36 +195,23 @@ function App() {
   ];
 
   const settings = {
-    "Turn Random X Axis Layer": function () {
-      const randomLayer = Math.random() < 0.5 ? -1 : 1;
-      const selectedAxis = axes[0];
-      tweenTopLayerRotation(selectedAxis, randomLayer);
-    },
-    "Turn Random Y Axis Layer": function () {
-      const randomLayer = Math.random() < 0.5 ? -1 : 1;
-      const selectedAxis = axes[1];
-      tweenTopLayerRotation(selectedAxis, randomLayer);
-    },
-    "Turn Random Z Axis Layer": function () {
-      const randomLayer = Math.random() < 0.5 ? -1 : 1;
-      const selectedAxis = axes[2];
-      tweenTopLayerRotation(selectedAxis, randomLayer);
-    },
-    "Turn Random Layer": function () {
-      const randomLayer = Math.random() < 0.5 ? -1 : 1;
-      const randomAxis = axes[Math.floor(Math.random() * 3)];
-      tweenTopLayerRotation(randomAxis, randomLayer);
-    },
-    "Spin Duration": spinDuration
+    "Shuffle Cube": () => shuffleCube(shuffleIterations),
+    "Spin Duration": spinDuration,
+    "Skip Tween": isSkippingTween,
+    "Shuffle Iterations": shuffleIterations,
   };
+
   const gui = new GUI();
-  gui.add(settings, "Turn Random Layer");
-  gui.add(settings, "Turn Random X Axis Layer");
-  gui.add(settings, "Turn Random Y Axis Layer");
-  gui.add(settings, "Turn Random Z Axis Layer");
-  gui.add(settings, "Spin Duration", 0, 1000).onChange(value => {
-    spinDuration = value
-  })
+  gui.add(settings, "Shuffle Cube");
+  gui.add(settings, "Spin Duration", 0, 1000).onChange((value) => {
+    spinDuration = value;
+  });
+  gui.add(settings, "Skip Tween").onChange((value) => {
+    isSkippingTween = value;
+  });
+  gui.add(settings, "Shuffle Iterations", 0, 200, 1).onChange((value) => {
+    shuffleIterations = value;
+  });
 
   const rubiksColors: THREE.Color[][][][] = [
     [
