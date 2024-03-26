@@ -129,7 +129,7 @@ function App() {
   let isSkippingTween = false;
   let shuffleIterations = 50;
 
-  const tweenTopLayerRotation = (axis: THREE.Vector3, layer: number) => {
+  const turnLayer = async (axis: THREE.Vector3, layer: number) => {
     if (isSkippingTween) {
       for (const tweenPlaying of TWEEN.getAll()) {
         tweenPlaying.end();
@@ -139,7 +139,11 @@ function App() {
         return;
       }
     }
+
     const rotationDirection = Math.random() < 0.5 ? -2 : 2;
+
+    const cubePromises: Promise<void>[] = [];
+
     if (rubiksRef.current && rubiksRef.current.children) {
       rubiksRef.current.children.forEach((cube) => {
         let shouldRotate = false;
@@ -174,17 +178,30 @@ function App() {
               prev.rotation = rotation;
             });
 
-          rotationTween.start();
+          cubePromises.push(
+            new Promise<void>((resolve) => {
+              rotationTween.onComplete(() => {
+                resolve();
+              });
+              rotationTween.start();
+            })
+          );
         }
       });
     }
+
+    await Promise.all(cubePromises);
   };
 
-  const shuffleCube = (iterations: number) => {
+  const shuffleCube = async (iterations: number) => {
     for (let i = 0; i < iterations; i++) {
       const randomLayer = Math.random() < 0.5 ? -1 : 1;
       const randomAxis = axes[Math.floor(Math.random() * 3)];
-      tweenTopLayerRotation(randomAxis, randomLayer);
+      if (isSkippingTween) {
+        turnLayer(randomAxis, randomLayer);
+      } else {
+        await turnLayer(randomAxis, randomLayer);
+      }
     }
   };
 
@@ -502,7 +519,7 @@ function App() {
         <directionalLight
           color={0xffffff}
           intensity={3}
-          position={new THREE.Vector3(0, 2, 0)}
+          position={new THREE.Vector3(0, 3, 0)}
         />
         <directionalLight
           color={0xffffff}
