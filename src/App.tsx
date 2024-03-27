@@ -1,131 +1,24 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from "three";
 import * as TWEEN from "@tweenjs/tween.js";
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
+import Cube from "./components/Cube";
 
 const sizes = {
   width: "100vw",
   height: "100vh",
 };
 
-interface SquareProps {
-  position: THREE.Vector3;
-  rotation: THREE.Euler;
-  color: THREE.Color;
-}
-
 interface CubeProps {
   position: THREE.Vector3;
   colors: THREE.Color[];
 }
 
-const Square: React.FC<SquareProps> = ({ position, rotation, color }) => {
-  const squareShape = new THREE.Shape();
-  const x = 0,
-    y = 0;
-  squareShape.moveTo(x - 0.4, y + 0.5);
-
-  squareShape.lineTo(x + 0.4, y + 0.5);
-  squareShape.bezierCurveTo(
-    x + 0.5,
-    y + 0.5,
-    x + 0.5,
-    y + 0.5,
-    x + 0.5,
-    y + 0.4
-  );
-
-  squareShape.lineTo(x + 0.5, y - 0.4);
-  squareShape.bezierCurveTo(
-    x + 0.5,
-    y - 0.5,
-    x + 0.5,
-    y - 0.5,
-    x + 0.4,
-    y - 0.5
-  );
-
-  squareShape.lineTo(x - 0.4, y - 0.5);
-  squareShape.bezierCurveTo(
-    x - 0.5,
-    y - 0.5,
-    x - 0.5,
-    y - 0.5,
-    x - 0.5,
-    y - 0.4
-  );
-
-  squareShape.lineTo(x - 0.5, y + 0.4);
-  squareShape.bezierCurveTo(
-    x - 0.5,
-    y + 0.5,
-    x - 0.5,
-    y + 0.5,
-    x - 0.4,
-    y + 0.5
-  );
-
-  return (
-    <group position={position} rotation={rotation}>
-      <mesh scale={new THREE.Vector3(0.9, 0.9, 0.9)}>
-        <shapeGeometry args={[squareShape]} />
-        <meshStandardMaterial metalness={0} roughness={0} color={color} />
-      </mesh>
-      <mesh position={new THREE.Vector3(0, 0, -0.01)}>
-        <shapeGeometry args={[squareShape]} />
-        <meshStandardMaterial
-          metalness={0}
-          roughness={0}
-          color="black"
-          side={THREE.FrontSide}
-        />
-      </mesh>
-    </group>
-  );
-};
-
-const Cube: React.FC<CubeProps> = ({ position, colors }) => {
-  return (
-    <group position={position}>
-      <Square
-        position={new THREE.Vector3(0, 0, 0.5)}
-        rotation={new THREE.Euler()}
-        color={colors[0]}
-      />
-      <Square
-        position={new THREE.Vector3(0, 0, -0.5)}
-        rotation={new THREE.Euler(0, Math.PI, 0)}
-        color={colors[1]}
-      />
-      <Square
-        position={new THREE.Vector3(0, 0.5, 0)}
-        rotation={new THREE.Euler(-Math.PI / 2, 0, 0)}
-        color={colors[2]}
-      />
-      <Square
-        position={new THREE.Vector3(0, -0.5, 0)}
-        rotation={new THREE.Euler(Math.PI / 2, 0, 0)}
-        color={colors[3]}
-      />
-      <Square
-        position={new THREE.Vector3(0.5, 0, 0)}
-        rotation={new THREE.Euler(0, Math.PI / 2, 0)}
-        color={colors[4]}
-      />
-      <Square
-        position={new THREE.Vector3(-0.5, 0, 0)}
-        rotation={new THREE.Euler(0, -Math.PI / 2, 0)}
-        color={colors[5]}
-      />
-    </group>
-  );
-};
-
 function App() {
   const rubiksRef = useRef<THREE.Group>(null);
-  let spinDuration = 500;
+  let spinDuration = 250;
   let isSkippingTween = false;
   let shuffleIterations = 50;
 
